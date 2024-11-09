@@ -21,7 +21,7 @@ private[wmscore] object WmsHttpServer {
 
     import system.executionContext
 
-    Http().bindAndHandle(routes, "localhost", port).onComplete {
+    Http().bindAndHandle(routes, "0.0.0.0", port).onComplete {
       case Success(binding) =>
         val address = binding.localAddress
         system.log.info(
