@@ -1,0 +1,62 @@
+version: "3"
+services:
+  wms1:
+    shm_size: '512mb'
+    image: wms:0.1
+    networks:
+      - wms_network
+    ports:
+      - '17345:17345'
+    entrypoint:
+      - /opt/docker/bin/wmscore
+      - '7345'
+    environment:
+      NODE_IP: wms1
+      NODE_PORT: 7345
+      NODE1_IP: wms1
+      NODE2_IP: wms2
+      NODE3_IP: wms3
+      NODE1_PORT: 7345
+      NODE2_PORT: 7355
+      NODE3_PORT: 7356
+  wms2:
+    shm_size: '512mb'
+    image: wms:0.1
+    networks:
+      - wms_network
+    ports:
+      - '17355:17355'
+    entrypoint:
+      - /opt/docker/bin/wmscore
+      - '7355'
+    environment:
+      NODE_PORT: 7355
+      NODE_IP: wms2
+      NODE1_IP: wms1
+      NODE2_IP: wms2
+      NODE3_IP: wms3
+      NODE1_PORT: 7345
+      NODE2_PORT: 7355
+      NODE3_PORT: 7356
+  wms3:
+    shm_size: '512mb'
+    image: wms:0.1
+    networks:
+       - wms_network
+    ports:
+      - '17356:17356'
+    entrypoint:
+      - /opt/docker/bin/wmscore
+      - '7356'
+    environment:
+      NODE_PORT: 7356
+      NODE_IP: wms3
+      NODE1_IP: wms1
+      NODE2_IP: wms2
+      NODE3_IP: wms3
+      NODE1_PORT: 7345
+      NODE2_PORT: 7355
+      NODE3_PORT: 7356
+networks:
+  wms_network:
+    driver: bridge

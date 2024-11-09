@@ -29,10 +29,14 @@ lazy val commonSettings = Seq(
 
 lazy val wmscore = project
   .in(file("wmscore"))
+  .enablePlugins(  JavaAppPackaging, DockerPlugin)
   .settings(buildSettings)
   .settings(commonSettings)
   .settings(
     Compile / run / mainClass := Some("wmscore.Wms"),
+    Docker / packageName := "wms",
+    Docker / version := "0.1",
+    //dockerExposedPorts ++= Seq(17345, 17355, 17356),
     libraryDependencies ++= Seq(
       "org.apache.pekko" %% "pekko-cluster-sharding-typed" % pekkoVersion,
       "org.apache.pekko" %% "pekko-serialization-jackson" % pekkoVersion,
@@ -46,4 +50,4 @@ lazy val wmscore = project
 // Startup aliases for the first two seed nodes and a third, more can be started.
 addCommandAlias("sharding1", "wmscore/runMain wmscore.Wms 7345")
 addCommandAlias("sharding2", "wmscore/runMain wmscore.Wms 7355")
-addCommandAlias("sharding3", "wmscore/runMain wmscore.Wms 0")
+addCommandAlias("sharding3", "wmscore/runMain wmscore.Wms 7356")
