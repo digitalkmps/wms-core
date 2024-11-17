@@ -11,7 +11,7 @@ import org.apache.pekko.util.Timeout
 
 /**
  * HTTP API for
- * 1. Receiving data from remote weather stations
+ * 1. Receiving data from remote stations
  * 2. Receiving and responding to queries
  */
 private[wmscore] final class WmsRoutes(system: ActorSystem[_]) {
@@ -27,22 +27,11 @@ private[wmscore] final class WmsRoutes(system: ActorSystem[_]) {
     ref.ask(WmsStation.Record(data, System.currentTimeMillis, _))
   }
 
-  private def query(wsid: Long, dataType: WmsStation.DataType, function: WmsStation.Function)
+  private def query(wsid: Long)
       : Future[WmsStation.QueryResult] = {
     val ref = sharding.entityRefFor(WmsStation.TypeKey, wsid.toString)
-    ref.ask(WmsStation.Query(dataType, function, _))
+    ref.ask(replyTo => WmsStation.Query(replyTo))
   }
-
-  // unmarshallers for the query parameters
-  private val funcsFromName =
-    WmsStation.Function.All.map(function => function.toString.toLowerCase -> function).toMap
-  private implicit val functionTypeUnmarshaller: Unmarshaller[String, WmsStation.Function] =
-    Unmarshaller.strict[String, WmsStation.Function](text => funcsFromName(text.toLowerCase))
-
-  private val dataTypesFromNames =
-    WmsStation.DataType.All.map(dataType => dataType.toString.toLowerCase -> dataType).toMap
-  private implicit val dataTypeUnmarshaller: Unmarshaller[String, WmsStation.DataType] =
-    Unmarshaller.strict[String, WmsStation.DataType](text => dataTypesFromNames(text.toLowerCase))
 
   // imports needed for the routes and entity json marshalling
   import org.apache.pekko.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
@@ -50,13 +39,10 @@ private[wmscore] final class WmsRoutes(system: ActorSystem[_]) {
   import JsonFormats._
 
   val weather: Route =
-    path("weather" / LongNumber) { wsid =>
+    path("data" / LongNumber) { wsid =>
       concat(
         get {
-          parameters("type".as[WmsStation.DataType], "function".as[WmsStation.Function]) {
-            (dataType, function) =>
-              complete(query(wsid, dataType, function))
-          }
+          complete(query(wsid))
         },
         post {
           entity(as[WmsStation.Data]) { data =>

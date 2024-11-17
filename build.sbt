@@ -3,7 +3,10 @@ val pekkoHttpVersion = "1.1.0"
 val logbackVersion = "1.3.14"
 
 lazy val buildSettings = Seq(
-  organization := "org.apache.pekko",
+  organization := "digitalkpms",
+  version := "0.0.1",
+  name := "wms-core",
+  publish / skip := true,
   scalaVersion := "3.3.4")
 
 lazy val commonScalacOptions = Seq(
