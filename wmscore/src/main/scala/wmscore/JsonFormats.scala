@@ -34,17 +34,11 @@ object JsonFormats {
     override def write(obj: T): JsValue =
       JsString(valueToString(obj))
   }
-
-  implicit val functionFormat: JsonFormat[WmsStation.Function] = SimpleEnumFormat(WmsStation.Function.All)
-  implicit val dataTypeFormat: JsonFormat[WmsStation.DataType] = SimpleEnumFormat(WmsStation.DataType.All)
-  implicit val dataFormat: RootJsonFormat[WmsStation.Data] = jsonFormat3(WmsStation.Data.apply)
+  implicit val dataFormat: RootJsonFormat[WmsStation.Data] = jsonFormat5(WmsStation.Data.apply)
 
   implicit val dataIngestedFormat: RootJsonFormat[WmsStation.DataRecorded] =
     jsonFormat1(WmsStation.DataRecorded.apply)
-
-  implicit val queryWindowFormat: RootJsonFormat[WmsStation.TimeWindow] =
-    jsonFormat3(WmsStation.TimeWindow.apply)
   implicit val queryStatusFormat: RootJsonFormat[WmsStation.QueryResult] =
-    jsonFormat5(WmsStation.QueryResult.apply)
+    jsonFormat3(WmsStation.QueryResult.apply)
 
 }
